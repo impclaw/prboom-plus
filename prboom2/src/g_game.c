@@ -597,7 +597,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       newweapon =
         (gamekeydown[key_weapon1] || mousebuttons [mb_weapon1]) ? wp_fist :    // killough 5/2/98: reformatted
         (gamekeydown[key_weapon2] || mousebuttons [mb_weapon2]) ? wp_pistol :
-        (gamekeydown[key_weapon3] || mousebuttons [mb_weapon3]) ? wp_shotgun :
+        (gamekeydown['r'])                                      ? wp_shotgun :
+        (gamekeydown[key_weapon3] || mousebuttons [mb_weapon3]) ? wp_supershotgun :
         (gamekeydown[key_weapon4] || mousebuttons [mb_weapon4]) ? wp_chaingun :
         (gamekeydown[key_weapon5] || mousebuttons [mb_weapon5]) ? wp_missile :
         (gamekeydown[key_weapon6] || mousebuttons [mb_weapon6]) && gamemode != shareware ? wp_plasma :
@@ -639,6 +640,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
           // in use, or if the SSG is not already in use and the
           // player prefers it.
 
+		  /*
           if (newweapon == wp_shotgun && gamemode == commercial &&
               player->weaponowned[wp_supershotgun] &&
               (!player->weaponowned[wp_shotgun] ||
@@ -646,6 +648,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
                (player->readyweapon != wp_supershotgun &&
                 P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
             newweapon = wp_supershotgun;
+		*/
         }
       // killough 2/8/98, 3/22/98 -- end of weapon selection changes
       //}

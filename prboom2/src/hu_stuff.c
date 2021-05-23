@@ -167,6 +167,27 @@ static hu_textline_t  w_map_items;     //e6y items widgets automap
 static hu_textline_t  w_map_time;      //e6y level time widgets automap
 static hu_textline_t  w_map_totaltime; //e6y total time widgets automap
 
+//monster counts
+static hu_textline_t  w_map_humancount; 
+static hu_textline_t  w_map_impcount; 
+static hu_textline_t  w_map_chaincount; 
+static hu_textline_t  w_map_demoncount; 
+static hu_textline_t  w_map_soulcount; 
+
+static hu_textline_t  w_map_cacocount; 
+static hu_textline_t  w_map_baroncount; 
+static hu_textline_t  w_map_trumpcount; 
+static hu_textline_t  w_map_captaincount; 
+static hu_textline_t  w_map_spidercount; 
+
+static hu_textline_t  w_map_paincount; 
+static hu_textline_t  w_map_vilecount; 
+static hu_textline_t  w_map_bosscount; 
+
+static hu_textline_t  w_map_health; 
+static hu_textline_t  w_map_armor; 
+static hu_textline_t  w_map_extra; 
+
 static hu_textline_t  w_health_big;
 static hu_textline_t  w_medict_icon_big;
 static hu_textline_t  w_medict_icon_small;
@@ -874,6 +895,157 @@ void HU_Start(void)
     &w_map_totaltime,
     HU_MAP_STAT_X,
     HU_MAP_TOTALTIME_Y,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_humancount,
+    0,
+    54,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_impcount,
+    0,
+    62,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_chaincount,
+    0,
+    70,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_demoncount,
+    0,
+    78,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_soulcount,
+    0,
+    86,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_cacocount,
+    0,
+    98,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_map_baroncount,
+    0,
+    106,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_trumpcount,
+    0,
+    114,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_captaincount,
+    0,
+    122,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_spidercount,
+    0,
+    130,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_paincount,
+    230,
+    8,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_vilecount,
+    230,
+    16,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_bosscount,
+    230,
+    24,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_health,
+    230,
+    36,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_armor,
+    230,
+    44,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_extra,
+    230,
+    56,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -2378,6 +2550,82 @@ void HU_draw_crosshair(void)
   }
 }
 
+void HU_DrawVal(hu_textline_t * h, const char * s, int color, int value) {
+  static char str[32];
+  if (value == -1)
+    sprintf(str, "\x1b%c%s", '0'+color, s);
+  else
+    sprintf(str, "\x1b%c%s: %d", '0'+color, s, value);
+  HUlib_clearTextLine(h);
+  s = str;
+  while (*s)
+    HUlib_addCharToTextLine(h, *(s++));
+  HUlib_drawTextLine(h, false);
+}
+
+void HU_DrawEnemyCount(hu_textline_t * h, const char * s, int first, int second)
+{
+  thinker_t *cap, *th;
+  int count = 0;
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
+    if (th->function == P_MobjThinker) {
+      mobj_t* mo = (mobj_t*)th;
+      if(mo->health <= 0) continue;
+
+      if (first != MT_NULL && mo->type == first) count++;
+      if (second != MT_NULL && mo->type == second) count++;
+    }
+  }
+  HU_DrawVal(h, s, 1, count);
+}
+
+void HU_DrawExtras(void) {
+  static char extra[32];
+  thinker_t *cap, *th;
+  int health = 0, soulsphere = 0, armor = 0, bluearmor = 0;
+  int bfg = 0, megasphere = 0;
+
+  HU_DrawEnemyCount(&w_map_humancount, "Human", MT_POSSESSED, MT_SHOTGUY);
+  HU_DrawEnemyCount(&w_map_impcount, "Imp", MT_TROOP, MT_NULL);
+  HU_DrawEnemyCount(&w_map_chaincount, "Chain", MT_CHAINGUY, MT_NULL);
+  HU_DrawEnemyCount(&w_map_demoncount, "Demon", MT_SERGEANT, MT_SHADOWS);
+  HU_DrawEnemyCount(&w_map_soulcount, "Soul", MT_SKULL, MT_NULL);
+
+  HU_DrawEnemyCount(&w_map_cacocount, "Caco", MT_HEAD, MT_NULL);
+  HU_DrawEnemyCount(&w_map_baroncount, "Baron", MT_BRUISER, MT_KNIGHT);
+  HU_DrawEnemyCount(&w_map_trumpcount, "Trump", MT_UNDEAD, MT_NULL);
+  HU_DrawEnemyCount(&w_map_captaincount, "Capt", MT_FATSO, MT_NULL);
+  HU_DrawEnemyCount(&w_map_spidercount, "Spider", MT_BABY, MT_NULL);
+
+  HU_DrawEnemyCount(&w_map_paincount, "Pain", MT_PAIN, MT_NULL);
+  HU_DrawEnemyCount(&w_map_vilecount, "Vile", MT_VILE, MT_NULL);
+  HU_DrawEnemyCount(&w_map_bosscount, "Boss", MT_CYBORG, MT_SPIDER);
+
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
+    if (th->function == P_MobjThinker) {
+      mobj_t* mo = (mobj_t*)th;
+      if(mo->type == MT_MISC2) health += 1;
+      if(mo->type == MT_MISC10) health += 10;
+      if(mo->type == MT_MISC11) health += 25;
+      if(mo->type == MT_MISC12) { health += 100; soulsphere = 1; } 
+      if(mo->type == MT_MISC3) armor += 1;
+      if(mo->type == MT_MISC0) armor += 100;
+      if(mo->type == MT_MISC1) { armor += 200; bluearmor = 1; }
+      if(mo->type == MT_MEGA) megasphere = 1;
+      if(mo->type == MT_MISC25) bfg = 1;
+    }
+  }
+
+  // 3 - green, 7 - veryblue, 8 - gold
+
+  HU_DrawVal(&w_map_health, "Health", soulsphere ? 7 : 3, health);
+  HU_DrawVal(&w_map_armor, "Armor", bluearmor ? 7 : 3, armor);
+  strcpy(extra, "");
+  if (bfg) sprintf(extra, "%s%s ", extra, "BFG");
+  if (megasphere) sprintf(extra, "%s%s ", extra, "MEGA");
+  HU_DrawVal(&w_map_extra, extra, 8, -1);
+}
+
 //
 // HU_Drawer()
 //
@@ -2497,6 +2745,9 @@ void HU_Drawer(void)
           HUlib_addCharToTextLine(&w_map_totaltime, *(s++));
         HUlib_drawTextLine(&w_map_totaltime, false);
       }
+
+      HU_DrawExtras();
+
     }
   }
 

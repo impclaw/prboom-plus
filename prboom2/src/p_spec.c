@@ -2343,31 +2343,6 @@ void P_PlayerInSpecialSector (player_t* player)
   {
     switch (sector->special)
       {
-      case 5:
-        // 5/10 unit damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 10);
-        break;
-
-      case 7:
-        // 2/5 unit damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 5);
-        break;
-
-      case 16:
-        // 10/20 unit damage per 31 ticks
-      case 4:
-        // 10/20 unit damage plus blinking light (light already spawned)
-        if (!player->powers[pw_ironfeet]
-            || (P_Random(pr_slimehurt)<5) ) // even with suit, take damage
-        {
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 20);
-        }
-        break;
 
       case 9:
         // Tally player in secret sector, clear secret special
@@ -2401,29 +2376,6 @@ void P_PlayerInSpecialSector (player_t* player)
   }
   else //jff 3/14/98 handle extended sector types for secrets and damage
   {
-    switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
-    {
-      case 0: // no damage
-        break;
-      case 1: // 2/5 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 5);
-        break;
-      case 2: // 5/10 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 10);
-        break;
-      case 3: // 10/20 damage per 31 ticks
-        if (!player->powers[pw_ironfeet]
-            || (P_Random(pr_slimehurt)<5))  // take damage even with suit
-        {
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 20);
-        }
-        break;
-    }
     if (sector->special&SECRET_MASK)
     {
       player->secretcount++;

@@ -121,9 +121,9 @@ static void cheat_shorttics();
 cheatseq_t cheat[] = {
   CHEAT("idmus",      "Change music",     always, cheat_mus, -2),
   CHEAT("idchoppers", "Chainsaw",         cht_never, cheat_choppers, 0),
-  CHEAT("iddqd",      "God mode",         cht_never, cheat_god, 0),
+  CHEAT("u",          "God mode",         cht_never, cheat_god, 0),
   CHEAT("idkfa",      "Ammo & Keys",      cht_never, cheat_kfa, 0),
-  CHEAT("idfa",       "Ammo",             cht_never, cheat_fa, 0),
+  CHEAT("k",          "Ammo",             cht_never, cheat_fa, 0),
   CHEAT("??????",     "No Clipping 1",    cht_never, cheat_noclip, 0),
   CHEAT("n",          "No Clipping 2",    cht_never, cheat_noclip, 0),
   CHEAT("vh",         "Invincibility",    cht_never, cheat_health, 0),

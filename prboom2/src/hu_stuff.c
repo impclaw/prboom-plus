@@ -188,6 +188,8 @@ static hu_textline_t  w_map_health;
 static hu_textline_t  w_map_armor; 
 static hu_textline_t  w_map_extra; 
 
+static hu_textline_t  w_powerup; 
+
 static hu_textline_t  w_health_big;
 static hu_textline_t  w_medict_icon_big;
 static hu_textline_t  w_medict_icon_small;
@@ -1046,6 +1048,16 @@ void HU_Start(void)
     &w_map_extra,
     230,
     56,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine
+  (
+    &w_powerup,
+    230,
+    0,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -2647,6 +2659,20 @@ void HU_Drawer(void)
     return;
 
   plr = &players[displayplayer];         // killough 3/7/98
+  int drawpower = -1;
+  if(plr->powers[pw_infrared] > 0) drawpower = pw_infrared;
+  if(plr->powers[pw_ironfeet] > 0) drawpower = pw_ironfeet;
+  if(plr->powers[pw_invisibility] > 0) drawpower = pw_invisibility;
+  if(plr->powers[pw_invulnerability] > 0) drawpower = pw_invulnerability;
+
+  if(drawpower > -1)
+	  HU_DrawVal(&w_powerup, 
+			  drawpower == pw_infrared ? "Infra" : 
+			  drawpower == pw_ironfeet ? "Feet": 
+			  drawpower == pw_invisibility ? "Invis": 
+			  drawpower == pw_invulnerability ? "Invul" : 
+			  "Unknown", 8, plr->powers[drawpower] / 35);
+
   // draw the automap widgets if automap is displayed
   if (automapmode & am_active)
   {

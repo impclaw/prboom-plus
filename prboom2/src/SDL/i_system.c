@@ -97,6 +97,10 @@
 
 #include "z_zone.h"
 
+#ifdef _WIN32
+#include "../WIN/win_fopen.h"
+#endif
+
 void I_uSleep(unsigned long usecs)
 {
     SDL_Delay(usecs/1000);
@@ -468,6 +472,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   } search0[] = {
     {NULL, NULL, NULL, I_DoomExeDir}, // config directory
     {NULL}, // current working directory
+    {PRBOOMDATADIR}, // supplemental data directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
     {NULL, "doom", "HOME"}, // ~/doom

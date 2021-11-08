@@ -54,6 +54,10 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#ifdef _WIN32
+#include "WIN/win_fopen.h"
+#endif
+
 #define TRUE 1
 #define FALSE 0
 
@@ -131,6 +135,25 @@ static int dehfgetc(DEHFILE *fp)
 {
   return !fp->lump ? fgetc(fp->f) : fp->size > 0 ?
     fp->size--, *fp->inp++ : EOF;
+}
+
+static long dehftell(DEHFILE *fp)
+{
+  return !fp->lump ? ftell(fp->f) : (fp->inp - fp->lump);
+}
+
+static int dehfseek(DEHFILE *fp, long offset)
+{
+  if (!fp->lump)
+    return fseek(fp->f, offset, SEEK_SET);
+  else
+  {
+    long total = (fp->inp - fp->lump) + fp->size;
+    offset = BETWEEN(0, total, offset);
+    fp->inp = fp->lump + offset;
+    fp->size = total - offset;
+    return 0;
+  }
 }
 
 // haleyjd 9/22/99
@@ -1546,6 +1569,8 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   DEHFILE infile, *filein = &infile;    // killough 10/98
   char inbuffer[DEH_BUFFERMAX];  // Place to put the primary infostring
   const char *file_or_lump;
+  static unsigned last_i;
+  static long filepos;
 
   // Open output file if we're writing output
   if (outfilename && *outfilename && !fileout)
@@ -1596,12 +1621,12 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
 
   // loop until end of file
 
+  last_i = DEH_BLOCKMAX-1;
+  filepos = 0;
   while (dehfgets(inbuffer,sizeof(inbuffer),filein))
     {
       dboolean match;
       unsigned i;
-      static unsigned last_i = DEH_BLOCKMAX-1;
-      static long filepos = 0;
 
       lfstrip(inbuffer);
       if (fileout) fprintf(fileout,"Line='%s'\n",inbuffer);
@@ -1665,8 +1690,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       else if (last_i >= 10 && last_i < DEH_BLOCKMAX-1) // restrict to BEX style lumps
         { // process that same line again with the last valid block code handler
           i = last_i;
-          if (!filein->lump)
-            fseek(filein->f, filepos, SEEK_SET);
+          dehfseek(filein, filepos);
         }
 
       if (fileout)
@@ -1674,8 +1698,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
                 i, deh_blocks[i].key);
       deh_blocks[i].fptr(filein,fileout,inbuffer);  // call function
 
-      if (!filein->lump) // back up line start
-        filepos = ftell(filein->f);
+      filepos = dehftell(filein); // back up line start
     }
 
   if (infile.lump)

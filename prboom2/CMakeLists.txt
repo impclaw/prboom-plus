@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project("PrBoom-Plus"
-    VERSION 2.6
+    VERSION 2.6.1
     HOMEPAGE_URL "https://github.com/coelckers/prboom-plus")
 
 # Set a default build type if none was specified
@@ -38,7 +38,7 @@ set(PACKAGE_TARNAME "prboom-plus")
 set(PACKAGE_VERSION "${PROJECT_VERSION}um")
 set(PACKAGE_HOMEPAGE "${PROJECT_HOMEPAGE_URL}")
 set(PACKAGE_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
-set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DATAROOTDIR}/doc/${PACKAGE_TARNAME}" CACHE PATH "")
+set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DATAROOTDIR}/doc/${PACKAGE_TARNAME}" CACHE PATH "" FORCE)
 
 include(CheckSymbolExists)
 
@@ -179,6 +179,7 @@ set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_PREV})
 set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES_PREV})
 
 set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/share/games/doom" CACHE PATH "Path to look for WAD files")
+set(PRBOOMDATADIR "${CMAKE_INSTALL_PREFIX}/share/${PACKAGE_TARNAME}" CACHE PATH "Path to install supplemental files")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 option(ZONEIDCHECK "Enable id checks on zone blocks, to detect corrupted and illegally freed blocks" ON)

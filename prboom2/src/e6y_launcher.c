@@ -54,6 +54,8 @@
 #include "e6y.h"
 #include "e6y_launcher.h"
 
+#include "WIN/win_fopen.h"
+
 #pragma comment( lib, "comctl32.lib" )
 #pragma comment( lib, "advapi32.lib" )
 
@@ -655,10 +657,12 @@ static dboolean L_PrepareToLaunch(void)
     index = (int)SendMessage(launcher.listIWAD, CB_GETITEMDATA, index, 0);
     if (index != CB_ERR)
     {
+      extern void D_AutoloadIWadDir();
       char *iwadname = PathFindFileName(launcher.files[index].name);
       history = malloc(strlen(iwadname) + 8);
       strcpy(history, iwadname);
       AddIWAD(launcher.files[index].name);
+      D_AutoloadIWadDir();
     }
   }
 

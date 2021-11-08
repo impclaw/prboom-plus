@@ -39,6 +39,9 @@
 #include "i_system.h"
 #include "i_capture.h"
 
+#ifdef _WIN32
+#include "WIN/win_fopen.h"
+#endif
 
 int capturing_video = 0;
 static const char *vid_fname;
@@ -548,7 +551,7 @@ void I_CapturePrep (const char *fn)
   videopipe.outthread = SDL_CreateThread (threadstdoutproc, "videopipe.outthread", &videopipe);
   videopipe.errthread = SDL_CreateThread (threadstderrproc, "videopipe.errthread", &videopipe);
 
-  I_AtExit (I_CaptureFinish, false);
+  I_AtExit (I_CaptureFinish, true);
 }
 
 

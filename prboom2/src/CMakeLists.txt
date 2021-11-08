@@ -301,12 +301,14 @@ function(AddGameExecutable TARGET SOURCES)
             e6y_launcher.c
             e6y_launcher.h
             SDL/SDL_windows_main.c
+            WIN/win_fopen.c
+            WIN/win_fopen.h
         )
         if(MSVC)
             set(SOURCES
                 ${SOURCES}
-                win_opendir.c
-                win_opendir.h
+                WIN/win_opendir.c
+                WIN/win_opendir.h
             )
         endif()
     endif()
@@ -384,7 +386,7 @@ function(AddGameExecutable TARGET SOURCES)
         )
     endif()
 
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
     if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
         target_compile_definitions(${TARGET} PRIVATE
@@ -416,6 +418,13 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         SDL/i_network.c
     )
 
+    if(WIN32)
+        set(PRBOOM_PLUS_GAME_SERVER_SOURCES
+            ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
+            WIN/win_fopen.c
+            WIN/win_fopen.h
+        )
+    endif()
     if(MSVC)
         set(PRBOOM_PLUS_GAME_SERVER_SOURCES
             ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
@@ -442,7 +451,7 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
     )
     ApplySDL2NetOptions(prboom-plus-game-server)
-    install(TARGETS prboom-plus-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS prboom-plus-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 endif()
 
 

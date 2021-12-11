@@ -186,7 +186,9 @@ static hu_textline_t  w_map_bosscount;
 
 static hu_textline_t  w_map_health; 
 static hu_textline_t  w_map_armor; 
-static hu_textline_t  w_map_extra; 
+static hu_textline_t  w_map_ammo; 
+static hu_textline_t  w_map_ammo2; 
+static hu_textline_t  w_map_extra;
 
 static hu_textline_t  w_powerup; 
 
@@ -905,7 +907,7 @@ void HU_Start(void)
   (
     &w_map_humancount,
     0,
-    54,
+    62,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -915,7 +917,7 @@ void HU_Start(void)
   (
     &w_map_impcount,
     0,
-    62,
+    70,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -925,7 +927,7 @@ void HU_Start(void)
   (
     &w_map_chaincount,
     0,
-    70,
+    78,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -935,7 +937,7 @@ void HU_Start(void)
   (
     &w_map_demoncount,
     0,
-    78,
+    86,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -945,7 +947,7 @@ void HU_Start(void)
   (
     &w_map_soulcount,
     0,
-    86,
+    94,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -955,7 +957,7 @@ void HU_Start(void)
   (
     &w_map_cacocount,
     0,
-    98,
+    106,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -965,7 +967,7 @@ void HU_Start(void)
   (
     &w_map_baroncount,
     0,
-    106,
+    114,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -974,7 +976,7 @@ void HU_Start(void)
   HUlib_initTextLine (
     &w_map_trumpcount,
     0,
-    114,
+    122,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -983,7 +985,7 @@ void HU_Start(void)
   HUlib_initTextLine (
     &w_map_captaincount,
     0,
-    122,
+    130,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -992,7 +994,7 @@ void HU_Start(void)
   HUlib_initTextLine (
     &w_map_spidercount,
     0,
-    130,
+    138,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -1044,9 +1046,27 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_TOP
   );
   HUlib_initTextLine (
-    &w_map_extra,
+    &w_map_ammo,
     230,
     56,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_ammo2,
+    230,
+    64,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_extra,
+    230,
+    72,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -2595,6 +2615,7 @@ void HU_DrawExtras(void) {
   thinker_t *cap, *th;
   int health = 0, soulsphere = 0, armor = 0, bluearmor = 0;
   int bfg = 0, megasphere = 0;
+  int rockets = 0, cells = 0, shells = 0;
 
   HU_DrawEnemyCount(&w_map_humancount, "Human", MT_POSSESSED, MT_SHOTGUY);
   HU_DrawEnemyCount(&w_map_impcount, "Imp", MT_TROOP, MT_NULL);
@@ -2622,8 +2643,19 @@ void HU_DrawExtras(void) {
       if(mo->type == MT_MISC3) armor += 1;
       if(mo->type == MT_MISC0) armor += 100;
       if(mo->type == MT_MISC1) { armor += 200; bluearmor = 1; }
-      if(mo->type == MT_MEGA) megasphere = 1;
-      if(mo->type == MT_MISC25) bfg = 1;
+      if(mo->type == MT_MEGA) megasphere += 1;
+      if(mo->type == MT_MISC25) { bfg = 1; cells += 40; }
+	  if(mo->type == MT_SHOTGUN) shells += 4; 
+	  if(mo->type == MT_SUPERSHOTGUN) shells += 8; 
+	  if(mo->type == MT_MISC22) shells += 4; 
+	  if(mo->type == MT_MISC23) shells += 20; 
+	  if(mo->type == MT_MISC27) rockets += 2; 
+	  if(mo->type == MT_MISC18) rockets += 1; 
+	  if(mo->type == MT_MISC19) rockets += 5; 
+	  if(mo->type == MT_MISC20) cells += 20;
+	  if(mo->type == MT_MISC21) cells += 100;
+	  if(mo->type == MT_MISC28) cells += 40; 
+	  if(mo->type == MT_MISC24) { cells += 20; shells += 4; rockets += 1; }
     }
   }
 
@@ -2633,8 +2665,14 @@ void HU_DrawExtras(void) {
   HU_DrawVal(&w_map_armor, "Armor", bluearmor ? 7 : 3, armor);
   strcpy(extra, "");
   if (bfg) sprintf(extra, "%s%s ", extra, "BFG");
-  if (megasphere) sprintf(extra, "%s%s ", extra, "MEGA");
+  if (megasphere) sprintf(extra, "%sM: %d", extra, megasphere);
   HU_DrawVal(&w_map_extra, extra, 8, -1);
+
+  sprintf(extra, "%d/%d", rockets, cells);
+  HU_DrawVal(&w_map_ammo, extra, 0, -1);
+
+  sprintf(extra, "%d", shells);
+  HU_DrawVal(&w_map_ammo2, extra, 0, -1);
 }
 
 //

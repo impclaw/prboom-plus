@@ -119,7 +119,7 @@ static void cheat_shorttics();
 //-----------------------------------------------------------------------------
 
 cheatseq_t cheat[] = {
-  CHEAT("idmus",      "Change music",     always, cheat_mus, -2),
+  CHEAT("m",          "Change music",     always, cheat_mus, -2),
   CHEAT("idchoppers", "Chainsaw",         cht_never, cheat_choppers, 0),
   CHEAT("u",          "God mode",         cht_never, cheat_god, 0),
   CHEAT("idkfa",      "Ammo & Keys",      cht_never, cheat_kfa, 0),
@@ -144,7 +144,7 @@ cheatseq_t cheat[] = {
   // jff 2/01/98 kill all monsters
   CHEAT("tntem",      NULL,               cht_never, cheat_massacre, 0),
   // killough 2/07/98: moved from am_map.c
-  CHEAT("iddt",       "Map cheat",        not_dm, cheat_ddt, 0),
+  CHEAT("t",       "Map cheat",           not_dm, cheat_ddt, 0),
   // killough 2/07/98: HOM autodetector
   CHEAT("tnthom",     NULL,               always, cheat_hom, 0),
   // killough 2/16/98: generalized key cheats

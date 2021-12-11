@@ -1504,8 +1504,10 @@ void M_QuickSave(void)
     quickSaveSlot = -2; // means to pick a slot now
     return;
   }
-  sprintf(tempstring,s_QSPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
-  M_StartMessage(tempstring,M_QuickSaveResponse,true);
+  //sprintf(tempstring,s_QSPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
+  //M_StartMessage(tempstring,M_QuickSaveResponse,true);
+  M_DoSave(quickSaveSlot);
+  S_StartSound(NULL,sfx_swtchx);
 }
 
 /////////////////////////////

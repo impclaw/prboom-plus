@@ -2610,7 +2610,7 @@ void HU_DrawEnemyCount(hu_textline_t * h, const char * s, int first, int second)
   HU_DrawVal(h, s, 1, count);
 }
 
-void HU_DrawExtras(void) {
+void HU_DrawAMExtras(void) {
   static char extra[32];
   thinker_t *cap, *th;
   int health = 0, soulsphere = 0, armor = 0, bluearmor = 0;
@@ -2673,6 +2673,20 @@ void HU_DrawExtras(void) {
 
   sprintf(extra, "%d", shells);
   HU_DrawVal(&w_map_ammo2, extra, 0, -1);
+}
+
+void HU_DrawExtras(void) {
+  fline_t fl;
+  float moncount = totalkills;
+  float kills = players[consoleplayer].killcount - players[consoleplayer].resurectedkillcount;
+  int frac = (int)((kills / totalkills) * SCREENHEIGHT);
+  for(int i = 0; i < 16; i++) {
+	  fl.a.x = SCREENWIDTH - i;
+	  fl.a.y = 0;
+	  fl.b.x = SCREENWIDTH - i;
+	  fl.b.y = frac;
+	  V_DrawLine(&fl, i > 13 || i < 3 ? 46 : 42);
+  }
 }
 
 //
@@ -2809,7 +2823,7 @@ void HU_Drawer(void)
         HUlib_drawTextLine(&w_map_totaltime, false);
       }
 
-      HU_DrawExtras();
+      HU_DrawAMExtras();
 
     }
   }
@@ -2915,6 +2929,7 @@ void HU_Drawer(void)
 
   // display the interactive buffer for chat entry
   HUlib_drawIText(&w_chat);
+  HU_DrawExtras();
 }
 
 //

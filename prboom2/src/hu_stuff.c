@@ -186,8 +186,10 @@ static hu_textline_t  w_map_bosscount;
 
 static hu_textline_t  w_map_health; 
 static hu_textline_t  w_map_armor; 
-static hu_textline_t  w_map_ammo; 
-static hu_textline_t  w_map_ammo2; 
+static hu_textline_t  w_map_ammo_b; 
+static hu_textline_t  w_map_ammo_s; 
+static hu_textline_t  w_map_ammo_r; 
+static hu_textline_t  w_map_ammo_c; 
 static hu_textline_t  w_map_extra;
 
 static hu_textline_t  w_powerup; 
@@ -1002,7 +1004,7 @@ void HU_Start(void)
   );
   HUlib_initTextLine (
     &w_map_paincount,
-    230,
+    250,
     8,
     hu_font,
     HU_FONTSTART,
@@ -1011,7 +1013,7 @@ void HU_Start(void)
   );
   HUlib_initTextLine (
     &w_map_vilecount,
-    230,
+    250,
     16,
     hu_font,
     HU_FONTSTART,
@@ -1020,7 +1022,7 @@ void HU_Start(void)
   );
   HUlib_initTextLine (
     &w_map_bosscount,
-    230,
+    250,
     24,
     hu_font,
     HU_FONTSTART,
@@ -1029,7 +1031,7 @@ void HU_Start(void)
   );
   HUlib_initTextLine (
     &w_map_health,
-    230,
+    250,
     36,
     hu_font,
     HU_FONTSTART,
@@ -1038,7 +1040,7 @@ void HU_Start(void)
   );
   HUlib_initTextLine (
     &w_map_armor,
-    230,
+    250,
     44,
     hu_font,
     HU_FONTSTART,
@@ -1046,8 +1048,8 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_TOP
   );
   HUlib_initTextLine (
-    &w_map_ammo,
-    230,
+    &w_map_ammo_b,
+    250,
     56,
     hu_font,
     HU_FONTSTART,
@@ -1055,8 +1057,8 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_TOP
   );
   HUlib_initTextLine (
-    &w_map_ammo2,
-    230,
+    &w_map_ammo_s,
+    250,
     64,
     hu_font,
     HU_FONTSTART,
@@ -1064,9 +1066,27 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_TOP
   );
   HUlib_initTextLine (
-    &w_map_extra,
-    230,
+    &w_map_ammo_r,
+    250,
     72,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_ammo_c,
+    250,
+    80,
+    hu_font,
+    HU_FONTSTART,
+    hudcolor_mapstat_time,
+    VPT_ALIGN_LEFT_TOP
+  );
+  HUlib_initTextLine (
+    &w_map_extra,
+    250,
+    92,
     hu_font,
     HU_FONTSTART,
     hudcolor_mapstat_time,
@@ -1075,7 +1095,7 @@ void HU_Start(void)
   HUlib_initTextLine
   (
     &w_powerup,
-    230,
+    250,
     0,
     hu_font,
     HU_FONTSTART,
@@ -2615,7 +2635,7 @@ void HU_DrawAMExtras(void) {
   thinker_t *cap, *th;
   int health = 0, soulsphere = 0, armor = 0, bluearmor = 0;
   int bfg = 0, megasphere = 0;
-  int rockets = 0, cells = 0, shells = 0;
+  int rockets = 0, cells = 0, shells = 0, bullets = 0;
 
   HU_DrawEnemyCount(&w_map_humancount, "Human", MT_POSSESSED, MT_SHOTGUY);
   HU_DrawEnemyCount(&w_map_impcount, "Imp", MT_TROOP, MT_NULL);
@@ -2645,6 +2665,11 @@ void HU_DrawAMExtras(void) {
       if(mo->type == MT_MISC1) { armor += 200; bluearmor = 1; }
       if(mo->type == MT_MEGA) megasphere += 1;
       if(mo->type == MT_MISC25) { bfg = 1; cells += 40; }
+	  if(mo->type == MT_CHAINGUN && mo->flags & MF_DROPPED) bullets += 10; 
+	  else if(mo->type == MT_CHAINGUN) bullets += 20; 
+	  if(mo->type == MT_CLIP && mo->flags & MF_DROPPED) bullets += 5; 
+	  else if(mo->type == MT_CLIP) bullets += 10; 
+	  if(mo->type == MT_MISC17) bullets += 50; 
 	  if(mo->type == MT_SHOTGUN) shells += 4; 
 	  if(mo->type == MT_SUPERSHOTGUN) shells += 8; 
 	  if(mo->type == MT_MISC22) shells += 4; 
@@ -2655,24 +2680,35 @@ void HU_DrawAMExtras(void) {
 	  if(mo->type == MT_MISC20) cells += 20;
 	  if(mo->type == MT_MISC21) cells += 100;
 	  if(mo->type == MT_MISC28) cells += 40; 
-	  if(mo->type == MT_MISC24) { cells += 20; shells += 4; rockets += 1; }
+	  if(mo->type == MT_MISC24) { bullets += 20; cells += 20; shells += 4; rockets += 1; }
+
+	  //Monsters also have ammo
+	  if(mo->health <= 0) continue;
+	  if(mo->type == MT_POSSESSED) bullets += 5;
+      if(mo->type == MT_SHOTGUY) shells += 4;
+      if(mo->type == MT_CHAINGUY) bullets += 20;
     }
+  }
+  if (gameskill == 0) {
+	bullets <<= 1;
+	shells <<= 1;
+	cells <<= 1;
+	rockets <<= 1;
   }
 
   // 3 - green, 7 - veryblue, 8 - gold
 
-  HU_DrawVal(&w_map_health, "Health", soulsphere ? 7 : 3, health);
-  HU_DrawVal(&w_map_armor, "Armor", bluearmor ? 7 : 3, armor);
+  HU_DrawVal(&w_map_health, "H", soulsphere ? 7 : 3, health);
+  HU_DrawVal(&w_map_armor, "A", bluearmor ? 7 : 3, armor);
   strcpy(extra, "");
   if (bfg) sprintf(extra, "%s%s ", extra, "BFG");
-  if (megasphere) sprintf(extra, "%sM: %d", extra, megasphere);
+  if (megasphere) sprintf(extra, "%s+%dM", extra, megasphere);
   HU_DrawVal(&w_map_extra, extra, 8, -1);
 
-  sprintf(extra, "%d/%d", rockets, cells);
-  HU_DrawVal(&w_map_ammo, extra, 0, -1);
-
-  sprintf(extra, "%d", shells);
-  HU_DrawVal(&w_map_ammo2, extra, 0, -1);
+  HU_DrawVal(&w_map_ammo_b, "B", 0, bullets);
+  HU_DrawVal(&w_map_ammo_s, "S", 0, shells);
+  HU_DrawVal(&w_map_ammo_r, "R", 0, rockets);
+  HU_DrawVal(&w_map_ammo_c, "C", 0, cells);
 }
 
 void HU_DrawExtras(void) {

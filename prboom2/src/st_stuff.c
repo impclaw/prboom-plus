@@ -808,7 +808,7 @@ static void ST_doPaletteStuff(void)
         palette += STARTBONUSPALS;
       }
     else
-      if (palette_onpowers && (plyr->powers[pw_ironfeet] > 4*32 || plyr->powers[pw_ironfeet] & 8))
+      if (palette_onpowers && (innukage || (plyr->powers[pw_ironfeet] > 4*32 || plyr->powers[pw_ironfeet] & 8)))
         palette = RADIATIONPAL;
       else
         palette = 0;

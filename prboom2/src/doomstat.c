@@ -109,6 +109,7 @@ int help_friends, default_help_friends;
 int flashing_hom;     // killough 10/98
 
 int monkeys, default_monkeys;
+int innukage = 0;
 
 char *MAPNAME(int e, int m)
 {

@@ -2331,6 +2331,7 @@ void P_PlayerInSpecialSector (player_t* player)
   sector_t*   sector;
 
   sector = player->mo->subsector->sector;
+  innukage = 0;
 
   // Falling, not all the way down yet?
   // Sector specials don't apply in mid-air
@@ -2343,6 +2344,10 @@ void P_PlayerInSpecialSector (player_t* player)
   {
     switch (sector->special)
       {
+      case 5: case 7: case 16: case 4:
+          innukage = 1;
+          break;
+
 
       case 9:
         // Tally player in secret sector, clear secret special
@@ -2376,6 +2381,9 @@ void P_PlayerInSpecialSector (player_t* player)
   }
   else //jff 3/14/98 handle extended sector types for secrets and damage
   {
+    int shft = (sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT;
+    if (shft > 0 && shft <= 3)
+      innukage = 1;
     if (sector->special&SECRET_MASK)
     {
       player->secretcount++;

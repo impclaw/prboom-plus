@@ -2649,7 +2649,7 @@ mobjcount_t HU_MobjCount(void) {
 		case MT_MEGA:         t.megasphere += 1;                 break;
 		case MT_MISC25:       t.cells += 40; t.bfg = 1;          break;
 		case MT_MISC17:       t.bullets += 50;                   break;
-		case MT_SHOTGUN:      t.shells += 4;                     break;
+		case MT_SHOTGUN:      t.shells += 8;                     break;
 		case MT_SUPERSHOTGUN: t.shells += 8;                     break;
 		case MT_MISC22:       t.shells += 4;                     break;
 		case MT_MISC23:       t.shells += 20;                    break;
@@ -2666,6 +2666,8 @@ mobjcount_t HU_MobjCount(void) {
 			t.rockets += 1;
 			break;
 	  }
+	  if (mo->flags & MF_COUNTKILL && mo->health > 0)
+		  t.enemyhealth += mo->health;
 
 	  //Handle weapons where MT_DROPPED changes ammocount
 	  if(mo->type == MT_CHAINGUN && mo->flags & MF_DROPPED) t.bullets += 10; 
@@ -2686,6 +2688,11 @@ mobjcount_t HU_MobjCount(void) {
 	t.cells <<= 1;
 	t.rockets <<= 1;
   }
+  // Add player inventory
+  t.bullets += players[consoleplayer].ammo[am_clip];
+  t.shells += players[consoleplayer].ammo[am_shell];
+  t.rockets += players[consoleplayer].ammo[am_misl];
+  t.cells += players[consoleplayer].ammo[am_cell];
   return t;
 }
 
@@ -2725,15 +2732,49 @@ void HU_DrawAMExtras(void) {
 
 void HU_DrawExtras(void) {
   fline_t fl;
+  mobjcount_t t;
+  int barheight = SCREENHEIGHT / 3;
   float moncount = totalkills;
   float kills = players[consoleplayer].killcount - players[consoleplayer].resurectedkillcount;
-  int frac = (int)((kills / totalkills) * SCREENHEIGHT);
-  for(int i = 0; i < 16; i++) {
+  int killbar;
+  if(totalkills <= 0) killbar = barheight;
+  else killbar = (int)((kills / totalkills) * barheight);
+
+
+  t = HU_MobjCount();
+  int ammopower = 
+    t.shells *  (70) + 
+    t.bullets * (10) + 
+    t.cells *   (23) + 
+    t.rockets * (200);
+  int enemypower = t.enemyhealth;
+  ammopower = ((float)ammopower) * 0.75; // 75% accuracy
+  float totalpower = enemypower + ammopower;
+  int ammobar;
+
+  if(totalpower <= 0) ammobar = barheight;
+  else ammobar = (int)((ammopower / totalpower) * barheight);
+
+  
+  //1 score = 1 sg blast
+
+  for(int i = 1; i < 24; i++) {
 	  fl.a.x = SCREENWIDTH - i;
-	  fl.a.y = 0;
 	  fl.b.x = SCREENWIDTH - i;
-	  fl.b.y = frac;
-	  V_DrawLine(&fl, i > 13 || i < 3 ? 46 : 42);
+
+	  if (i < 12) {
+		  fl.a.y = barheight - killbar;
+		  fl.b.y = barheight;
+		  if(killbar != 0)
+			  V_DrawLine(&fl, 182);
+	  } else {
+		  fl.a.y = 0;
+		  fl.b.y = ammobar;
+		  V_DrawLine(&fl, 198);
+		  fl.a.y = ammobar;
+		  fl.b.y = barheight;
+		  V_DrawLine(&fl, ammopower > enemypower ? 62 : 42);
+	  }
   }
 }
 

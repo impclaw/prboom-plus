@@ -128,6 +128,7 @@ typedef struct mobjcount_s
   int human, imp, chain, demon, soul;
   int caco, knight, baron, trump, capt;
   int spider, pain, vile, boss_s, boss_c;
+  int enemyhealth;
 } mobjcount_t;
 
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);

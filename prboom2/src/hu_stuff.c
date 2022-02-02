@@ -2614,61 +2614,64 @@ void HU_DrawVal(hu_textline_t * h, const char * s, int color, int value) {
   HUlib_drawTextLine(h, false);
 }
 
-void HU_DrawEnemyCount(hu_textline_t * h, const char * s, int first, int second)
-{
-  thinker_t *cap, *th;
-  int count = 0;
-  for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
-    if (th->function == P_MobjThinker) {
-      mobj_t* mo = (mobj_t*)th;
-      if(mo->health <= 0) continue;
-
-      if (first != MT_NULL && mo->type == first) count++;
-      if (second != MT_NULL && mo->type == second) count++;
-    }
-  }
-  HU_DrawVal(h, s, 1, count);
-}
-
 void HU_DrawAMExtras(void) {
   static char extra[32];
   thinker_t *cap, *th;
   int health = 0, soulsphere = 0, armor = 0, bluearmor = 0;
   int bfg = 0, megasphere = 0;
   int rockets = 0, cells = 0, shells = 0, bullets = 0;
-
-  HU_DrawEnemyCount(&w_map_humancount, "Human", MT_POSSESSED, MT_SHOTGUY);
-  HU_DrawEnemyCount(&w_map_impcount, "Imp", MT_TROOP, MT_NULL);
-  HU_DrawEnemyCount(&w_map_chaincount, "Chain", MT_CHAINGUY, MT_NULL);
-  HU_DrawEnemyCount(&w_map_demoncount, "Demon", MT_SERGEANT, MT_SHADOWS);
-  HU_DrawEnemyCount(&w_map_soulcount, "Soul", MT_SKULL, MT_NULL);
-
-  HU_DrawEnemyCount(&w_map_cacocount, "Caco", MT_HEAD, MT_NULL);
-  HU_DrawEnemyCount(&w_map_baroncount, "Baron", MT_BRUISER, MT_KNIGHT);
-  HU_DrawEnemyCount(&w_map_trumpcount, "Trump", MT_UNDEAD, MT_NULL);
-  HU_DrawEnemyCount(&w_map_captaincount, "Capt", MT_FATSO, MT_NULL);
-  HU_DrawEnemyCount(&w_map_spidercount, "Spider", MT_BABY, MT_NULL);
-
-  HU_DrawEnemyCount(&w_map_paincount, "Pain", MT_PAIN, MT_NULL);
-  HU_DrawEnemyCount(&w_map_vilecount, "Vile", MT_VILE, MT_NULL);
-  HU_DrawEnemyCount(&w_map_bosscount, "Boss", MT_CYBORG, MT_SPIDER);
+  int human = 0, imp = 0, chain = 0, demon = 0, soul = 0;
+  int caco = 0, knight = 0, baron = 0, trump = 0, capt = 0;
+  int spider = 0, pain = 0, vile = 0, boss_s = 0, boss_c = 0;
 
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
     if (th->function == P_MobjThinker) {
       mobj_t* mo = (mobj_t*)th;
-      if(mo->type == MT_MISC2) health += 1;
-      if(mo->type == MT_MISC10) health += 10;
-      if(mo->type == MT_MISC11) health += 25;
-      if(mo->type == MT_MISC12) { health += 100; soulsphere = 1; } 
-      if(mo->type == MT_MISC3) armor += 1;
-      if(mo->type == MT_MISC0) armor += 100;
-      if(mo->type == MT_MISC1) { armor += 200; bluearmor = 1; }
-      if(mo->type == MT_MEGA) megasphere += 1;
-      if(mo->type == MT_MISC25) { bfg = 1; cells += 40; }
-	  if(mo->type == MT_CHAINGUN && mo->flags & MF_DROPPED) bullets += 10; 
-	  else if(mo->type == MT_CHAINGUN) bullets += 20; 
-	  if(mo->type == MT_CLIP && mo->flags & MF_DROPPED) bullets += 5; 
-	  else if(mo->type == MT_CLIP) bullets += 10; 
+	  switch(mo->type) {
+		case MT_TROOP:        imp++;                         break;
+		case MT_CHAINGUY:     chain++;                       break;
+		case MT_SHADOWS:
+		case MT_SERGEANT:     demon++;                       break;
+		case MT_SKULL:        soul++;                        break;
+		case MT_HEAD:         caco++;                        break;
+		case MT_BRUISER:      baron++;                       break;
+		case MT_KNIGHT:       knight++;                      break;
+		case MT_UNDEAD:       trump++;                       break;
+		case MT_FATSO:        capt++;                        break;
+		case MT_BABY:         spider++;                      break;
+		case MT_PAIN:         pain++;                        break;
+		case MT_VILE:         vile++;                        break;
+		case MT_SPIDER:       boss_s++;                      break;
+		case MT_CYBORG:       boss_c++;                      break;
+		case MT_SHOTGUY:
+		case MT_POSSESSED:    human++;                       break;
+		case MT_MISC2:        health += 1;                   break;
+		case MT_MISC10:       health += 10;                  break;
+		case MT_MISC11:       health += 25;                  break;
+		case MT_MISC12:       health += 100; soulsphere = 1; break;
+		case MT_MISC3:        armor += 1;                    break;
+		case MT_MISC0:        armor += 100;                  break;
+		case MT_MISC1:        armor += 200; bluearmor = 1;   break;
+		case MT_MEGA:         megasphere += 1;               break;
+		case MT_MISC25:       cells += 40; bfg = 1;          break;
+		case MT_MISC17:       bullets += 50;                 break;
+		case MT_SHOTGUN:      shells += 4;                   break;
+		case MT_SUPERSHOTGUN: shells += 8;                   break;
+		case MT_MISC22:       shells += 4;                   break;
+		case MT_MISC23:       shells += 20;                  break;
+		case MT_MISC27:       rockets += 2;                  break;
+		case MT_MISC18:       rockets += 1;                  break;
+		case MT_MISC19:       rockets += 5;                  break;
+		case MT_MISC20:       cells += 20;                   break;
+		case MT_MISC21:       cells += 100;                  break;
+		case MT_MISC28:       cells += 40;                   break;
+		case MT_MISC24: 
+			bullets += 20; 
+			cells += 20;
+			shells += 4;
+			rockets += 1;
+			break;
+	  }
 	  if(mo->type == MT_MISC17) bullets += 50; 
 	  if(mo->type == MT_SHOTGUN) shells += 4; 
 	  if(mo->type == MT_SUPERSHOTGUN) shells += 8; 
@@ -2681,6 +2684,13 @@ void HU_DrawAMExtras(void) {
 	  if(mo->type == MT_MISC21) cells += 100;
 	  if(mo->type == MT_MISC28) cells += 40; 
 	  if(mo->type == MT_MISC24) { bullets += 20; cells += 20; shells += 4; rockets += 1; }
+
+	  //Handle weapons where MT_DROPPED changes ammocount
+	  if(mo->type == MT_CHAINGUN && mo->flags & MF_DROPPED) bullets += 10; 
+	  else if(mo->type == MT_CHAINGUN) bullets += 20; 
+	  if(mo->type == MT_CLIP && mo->flags & MF_DROPPED) bullets += 5; 
+	  else if(mo->type == MT_CLIP) bullets += 10; 
+
 
 	  //Monsters also have ammo
 	  if(mo->health <= 0) continue;
@@ -2697,6 +2707,20 @@ void HU_DrawAMExtras(void) {
   }
 
   // 3 - green, 7 - veryblue, 8 - gold
+  HU_DrawVal(&w_map_humancount,  "Human",   1, human);
+  HU_DrawVal(&w_map_impcount,    "Imp",     1, imp);
+  HU_DrawVal(&w_map_chaincount,  "Chain",   1, chain);
+  HU_DrawVal(&w_map_demoncount,  "Demon",   1, demon);
+  HU_DrawVal(&w_map_soulcount,   "Soul",    1, soul);
+  HU_DrawVal(&w_map_cacocount,   "Caco",    1, caco);
+  HU_DrawVal(&w_map_baroncount,  "Baron",   1, knight + baron);
+  HU_DrawVal(&w_map_trumpcount,  "Trump",   1, trump);
+  HU_DrawVal(&w_map_captaincount, "Capt",   1, capt);
+  HU_DrawVal(&w_map_spidercount,  "Spider", 1, spider);
+  HU_DrawVal(&w_map_paincount,    "Pain",   1, pain);
+  HU_DrawVal(&w_map_vilecount,    "Vile",   1, vile);
+  HU_DrawVal(&w_map_bosscount,    "Boss",   1, boss_c + boss_s);
+
 
   HU_DrawVal(&w_map_health, "H", soulsphere ? 7 : 3, health);
   HU_DrawVal(&w_map_armor, "A", bluearmor ? 7 : 3, armor);

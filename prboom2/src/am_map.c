@@ -2053,10 +2053,18 @@ static void AM_drawThings(void)
             color = mapcolor_ykey != -1? mapcolor_ykey : mapcolor_sprt; break;
           case 40: case 5: //jff blue key
             color = mapcolor_bkey != -1? mapcolor_bkey : mapcolor_sprt; break;
+		  case 83: case 2006: case 2019: case 2013: 
+		  case 2047: case 2046: case 17: 
+            color = mapcolor_bkey - 7; break;
         }
 
         if (color != -1)
         {
+          if(color == mapcolor_bkey - 7)
+		  {
+            AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+              scale, t->angle, color, p.x, p.y);
+		  }
           AM_drawLineCharacter(cross_mark, NUMCROSSMARKLINES,
             scale, t->angle, color, p.x, p.y);
           t = t->snext;

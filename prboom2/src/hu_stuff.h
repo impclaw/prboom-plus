@@ -120,6 +120,16 @@ typedef struct crosshair_s
 } crosshair_t;
 extern crosshair_t crosshair;
 
+typedef struct mobjcount_s
+{
+  int health, soulsphere, armor, bluearmor;
+  int bfg, megasphere;
+  int rockets, cells, shells, bullets;
+  int human, imp, chain, demon, soul;
+  int caco, knight, baron, trump, capt;
+  int spider, pain, vile, boss_s, boss_c;
+} mobjcount_t;
+
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
 
 #endif
